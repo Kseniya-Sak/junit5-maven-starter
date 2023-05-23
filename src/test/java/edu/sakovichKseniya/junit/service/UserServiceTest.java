@@ -51,6 +51,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginSuccessIfUserExists() {
         userService.add(IVAN);
 
@@ -61,6 +62,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginFailIfPasswordIsNotCorrect() {
         userService.add(IVAN);
 
@@ -70,6 +72,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void loginFailIfUserDoesNotExists() {
         userService.add(IVAN);
         Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
@@ -94,6 +97,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Tag("login")
     void throwExceptionIfUsernameOfPasswordIsNull() {
         assertAll(
                 () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, "111"),
