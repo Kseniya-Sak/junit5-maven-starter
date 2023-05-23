@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-@TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 public class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
@@ -17,13 +17,13 @@ public class UserServiceTest {
     private UserService userService;
 
     @BeforeAll
-    static void init() {
-        System.out.println("Before all: ");
+    void init() {
+        System.out.println("Before all: " + this);
     }
 
     @BeforeEach
     void prepare() {
-        System.out.println("Before each: " + this);
+        System.out.println("\nBefore each: " + this);
         userService = new UserService();
     }
 
@@ -48,6 +48,7 @@ public class UserServiceTest {
 
     @Test
     void loginSuccessIfUserExists() {
+        System.out.println("Test 3: " + this);
         userService.add(IVAN);
 
         Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
@@ -59,6 +60,7 @@ public class UserServiceTest {
 
     @Test
     void loginFailIfPasswordIsNotCorrect() {
+        System.out.println("Test 4: " + this);
         userService.add(IVAN);
 
         Optional<User> maybeUser = userService.login("Ivan", "111");
@@ -68,6 +70,7 @@ public class UserServiceTest {
 
     @Test
     void loginFailIfUserDoesNotExists() {
+        System.out.println("Test 5: " + this);
         userService.add(IVAN);
         Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
 
@@ -77,11 +80,10 @@ public class UserServiceTest {
     @AfterEach
     void deleteDataFromDatabase() {
         System.out.println("After each: " + this);
-        System.out.println();
     }
 
     @AfterAll
-    static void closeConnectionPool() {
-        System.out.println("After all: ");
+    void closeConnectionPool() {
+        System.out.println("\nAfter all: " + this);
     }
 }
