@@ -15,6 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
+@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 public class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
@@ -33,6 +34,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(1)
     void usersEmptyIfNoUsersAdded() {
         System.out.println("Test 1: " + this);
         var users = userService.getAll();
@@ -40,6 +42,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(2)
     void usersSizeIfUserAdded() {
         System.out.println("Test 2: " + this);
         userService.add(IVAN);
@@ -51,6 +54,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(3)
     @Tag("login")
     void loginSuccessIfUserExists() {
         userService.add(IVAN);
@@ -62,6 +66,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(4)
     @Tag("login")
     void loginFailIfPasswordIsNotCorrect() {
         userService.add(IVAN);
@@ -72,6 +77,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(5)
     @Tag("login")
     void loginFailIfUserDoesNotExists() {
         userService.add(IVAN);
@@ -81,6 +87,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(6)
     void usersConvertedToMapById() {
         userService.addAll(IVAN, PETR);
 
@@ -97,6 +104,7 @@ public class UserServiceTest {
     }
 
     @Test
+    @Order(7)
     @Tag("login")
     void throwExceptionIfUsernameOfPasswordIsNull() {
         assertAll(
