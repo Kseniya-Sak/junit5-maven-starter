@@ -1,12 +1,17 @@
 package edu.sakovichKseniya.junit.service;
 
 import edu.sakovichKseniya.junit.dto.User;
+import org.hamcrest.MatcherAssert;
+import org.hamcrest.collection.IsCollectionWithSize;
+import org.hamcrest.collection.IsMapContaining;
+import org.hamcrest.core.IsEqual;
+import org.hamcrest.core.IsNull;
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 
 import java.util.Map;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -42,8 +47,7 @@ public class UserServiceTest {
 
         var users = userService.getAll();
 
-        assertThat(users).hasSize(2);
-
+        MatcherAssert.assertThat(users, IsCollectionWithSize.hasSize(2));
     }
 
     @Test
@@ -52,9 +56,8 @@ public class UserServiceTest {
 
         Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
 
-        assertThat(maybeUser).isPresent();
-        maybeUser.ifPresent(user -> assertThat(user).isEqualTo(IVAN));
-
+        MatcherAssert.assertThat(maybeUser, IsNull.notNullValue());
+        maybeUser.ifPresent(user -> MatcherAssert.assertThat(user, IsEqual.equalTo(IVAN)));
     }
 
     @Test
@@ -63,7 +66,7 @@ public class UserServiceTest {
 
         Optional<User> maybeUser = userService.login("Ivan", "111");
 
-        assertThat(maybeUser).isEmpty();
+        MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
     }
 
     @Test
@@ -71,7 +74,7 @@ public class UserServiceTest {
         userService.add(IVAN);
         Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
 
-        assertThat(maybeUser).isEmpty();
+        MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
     }
 
     @Test
@@ -80,9 +83,13 @@ public class UserServiceTest {
 
         Map<Integer, User> users = userService.getAllConvertedById();
 
+        MatcherAssert.assertThat(users, IsMapContaining.hasKey(IVAN.getId()));
+
         assertAll(
-                () -> assertThat(users).containsKeys(IVAN.getId(), PETR.getId()),
-                () -> assertThat(users).containsValues(IVAN, PETR)
+                () -> MatcherAssert.assertThat(users, IsMapContaining.hasKey(IVAN.getId())),
+                () -> MatcherAssert.assertThat(users, IsMapContaining.hasKey(PETR.getId())),
+                () -> MatcherAssert.assertThat(users, IsMapContaining.hasValue(IVAN)),
+                () -> MatcherAssert.assertThat(users, IsMapContaining.hasValue(PETR))
         );
     }
 
