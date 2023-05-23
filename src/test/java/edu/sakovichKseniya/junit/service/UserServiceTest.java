@@ -15,7 +15,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
-@TestMethodOrder(MethodOrderer.OrderAnnotation.class)
+@TestMethodOrder(MethodOrderer.DisplayName.class)
 public class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
@@ -34,7 +34,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @Order(1)
     void usersEmptyIfNoUsersAdded() {
         System.out.println("Test 1: " + this);
         var users = userService.getAll();
@@ -42,7 +41,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @Order(2)
     void usersSizeIfUserAdded() {
         System.out.println("Test 2: " + this);
         userService.add(IVAN);
@@ -54,40 +52,6 @@ public class UserServiceTest {
     }
 
     @Test
-    @Order(3)
-    @Tag("login")
-    void loginSuccessIfUserExists() {
-        userService.add(IVAN);
-
-        Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
-
-        MatcherAssert.assertThat(maybeUser, IsNull.notNullValue());
-        maybeUser.ifPresent(user -> MatcherAssert.assertThat(user, IsEqual.equalTo(IVAN)));
-    }
-
-    @Test
-    @Order(4)
-    @Tag("login")
-    void loginFailIfPasswordIsNotCorrect() {
-        userService.add(IVAN);
-
-        Optional<User> maybeUser = userService.login("Ivan", "111");
-
-        MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
-    }
-
-    @Test
-    @Order(5)
-    @Tag("login")
-    void loginFailIfUserDoesNotExists() {
-        userService.add(IVAN);
-        Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
-
-        MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
-    }
-
-    @Test
-    @Order(6)
     void usersConvertedToMapById() {
         userService.addAll(IVAN, PETR);
 
@@ -103,15 +67,46 @@ public class UserServiceTest {
         );
     }
 
-    @Test
-    @Order(7)
+    @Nested
+    @DisplayName("test user login functionality")
     @Tag("login")
-    void throwExceptionIfUsernameOfPasswordIsNull() {
-        assertAll(
-                () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, "111"),
-                        "login should throw exception on null username"),
-                () -> assertThrows(IllegalArgumentException.class, () -> userService.login("Ivan", null))
-        );
+    class LoginTest {
+        @Test
+        void loginSuccessIfUserExists() {
+            userService.add(IVAN);
+
+            Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
+
+            MatcherAssert.assertThat(maybeUser, IsNull.notNullValue());
+            maybeUser.ifPresent(user -> MatcherAssert.assertThat(user, IsEqual.equalTo(IVAN)));
+        }
+
+        @Test
+        void loginFailIfPasswordIsNotCorrect() {
+            userService.add(IVAN);
+
+            Optional<User> maybeUser = userService.login("Ivan", "111");
+
+            MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
+        }
+
+        @Test
+        void loginFailIfUserDoesNotExists() {
+            userService.add(IVAN);
+            Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
+
+            MatcherAssert.assertThat(maybeUser, IsEqual.equalTo(Optional.empty()));
+        }
+
+        @Test
+        void throwExceptionIfUsernameOfPasswordIsNull() {
+            assertAll(
+                    () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, "111"),
+                            "login should throw exception on null username"),
+                    () -> assertThrows(IllegalArgumentException.class, () -> userService.login("Ivan", null))
+            );
+        }
+
     }
 
     @AfterEach
