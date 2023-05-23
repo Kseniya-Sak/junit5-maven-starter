@@ -95,12 +95,11 @@ public class UserServiceTest {
 
     @Test
     void throwExceptionIfUsernameOfPasswordIsNull() {
-        try {
-            userService.login(null, "111");
-            fail("login should throw exception on null username");
-        } catch (IllegalArgumentException e) {
-            assertTrue(true);
-        }
+        assertAll(
+                () -> assertThrows(IllegalArgumentException.class, () -> userService.login(null, "111"),
+                        "login should throw exception on null username"),
+                () -> assertThrows(IllegalArgumentException.class, () -> userService.login("Ivan", null))
+        );
     }
 
     @AfterEach
