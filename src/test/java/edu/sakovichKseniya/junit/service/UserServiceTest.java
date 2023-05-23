@@ -93,6 +93,16 @@ public class UserServiceTest {
         );
     }
 
+    @Test
+    void throwExceptionIfUsernameOfPasswordIsNull() {
+        try {
+            userService.login(null, "111");
+            fail("login should throw exception on null username");
+        } catch (IllegalArgumentException e) {
+            assertTrue(true);
+        }
+    }
+
     @AfterEach
     void deleteDataFromDatabase() {
         System.out.println("After each: " + this);
