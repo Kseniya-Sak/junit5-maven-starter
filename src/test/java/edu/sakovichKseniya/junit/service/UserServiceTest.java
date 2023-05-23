@@ -1,12 +1,12 @@
-package edu.sakovichKseniya.junit;
+package edu.sakovichKseniya.junit.service;
 
 import edu.sakovichKseniya.junit.dto.User;
-import edu.sakovichKseniya.junit.service.UserService;
 import org.junit.jupiter.api.*;
 
-import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
@@ -32,7 +32,6 @@ public class UserServiceTest {
         System.out.println("Test 1: " + this);
         var users = userService.getAll();
         assertTrue(users.isEmpty(), () -> "Error");
-
     }
 
     @Test
@@ -42,7 +41,8 @@ public class UserServiceTest {
         userService.add(PETR);
 
         var users = userService.getAll();
-        assertEquals(2, users.size());
+
+        assertThat(users).hasSize(2);
 
     }
 
@@ -52,8 +52,8 @@ public class UserServiceTest {
 
         Optional<User> maybeUser = userService.login(IVAN.getUsername(), IVAN.getPassword());
 
-        assertTrue(maybeUser.isPresent());
-        maybeUser.ifPresent(user -> assertEquals(IVAN, maybeUser.get()));
+        assertThat(maybeUser).isPresent();
+        maybeUser.ifPresent(user -> assertThat(user).isEqualTo(IVAN));
 
     }
 
@@ -63,7 +63,7 @@ public class UserServiceTest {
 
         Optional<User> maybeUser = userService.login("Ivan", "111");
 
-        assertTrue(maybeUser.isEmpty());
+        assertThat(maybeUser).isEmpty();
     }
 
     @Test
@@ -71,7 +71,19 @@ public class UserServiceTest {
         userService.add(IVAN);
         Optional<User> maybeUser = userService.login("d", IVAN.getPassword());
 
-        assertTrue(maybeUser.isEmpty());
+        assertThat(maybeUser).isEmpty();
+    }
+
+    @Test
+    void usersConvertedToMapById() {
+        userService.addAll(IVAN, PETR);
+
+        Map<Integer, User> users = userService.getAllConvertedById();
+
+        assertAll(
+                () -> assertThat(users).containsKeys(IVAN.getId(), PETR.getId()),
+                () -> assertThat(users).containsValues(IVAN, PETR)
+        );
     }
 
     @AfterEach

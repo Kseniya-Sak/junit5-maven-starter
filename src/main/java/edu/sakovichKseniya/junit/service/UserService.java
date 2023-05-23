@@ -2,10 +2,11 @@ package edu.sakovichKseniya.junit.service;
 
 import edu.sakovichKseniya.junit.dto.User;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
+import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collector;
+import java.util.stream.Collectors;
 
 public class UserService {
 
@@ -24,5 +25,14 @@ public class UserService {
                 .filter(user -> user.getUsername().equals(username))
                 .filter(user -> user.getPassword().equals(password))
                 .findFirst();
+    }
+
+    public void addAll(User... users) {
+        this.users.addAll(Arrays.asList(users));
+    }
+
+    public Map<Integer, User> getAllConvertedById() {
+        return users.stream()
+                .collect(Collectors.toMap(User::getId, Function.identity()));
     }
 }
