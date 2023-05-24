@@ -15,6 +15,7 @@ public class UserServiceParamResolver implements ParameterResolver {
 
     @Override
     public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext) throws ParameterResolutionException {
-        return new UserService();
+        ExtensionContext.Store store = extensionContext.getStore(ExtensionContext.Namespace.create(UserService.class));
+        return store.getOrComputeIfAbsent(UserService.class, cl -> new UserService());
     }
 }
