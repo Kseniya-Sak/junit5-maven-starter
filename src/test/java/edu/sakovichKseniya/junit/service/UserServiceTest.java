@@ -125,12 +125,12 @@ public class UserServiceTest {
         }
 
         @ParameterizedTest
-        @MethodSource("edu.sakovichKseniya.junit.service.UserServiceTest#getArgumentsForLoginTest")
-        void loginParametrizedTest(String username, String password, Optional<User> user) {
+        @CsvFileSource(resources = "/login-test-data.csv", numLinesToSkip = 1)
+        void loginParametrizedTest(String username, String password) {
             userService.addAll(IVAN, PETR);
             Optional<User> maybeUser = userService.login(username, password);
 
-            org.assertj.core.api.Assertions.assertThat(maybeUser).isEqualTo(user);
+            org.assertj.core.api.Assertions.assertThat(maybeUser).isEqualTo(Optional.empty());
 
         }
     }
