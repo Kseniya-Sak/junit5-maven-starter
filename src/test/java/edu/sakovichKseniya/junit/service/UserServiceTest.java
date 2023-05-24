@@ -2,6 +2,7 @@ package edu.sakovichKseniya.junit.service;
 
 import edu.sakovichKseniya.junit.dto.User;
 import edu.sakovichKseniya.junit.paramResolver.UserServiceParamResolver;
+import lombok.Value;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.collection.IsMapContaining;
@@ -10,9 +11,12 @@ import org.hamcrest.core.IsNull;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.*;
 
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -120,6 +124,24 @@ public class UserServiceTest {
             );
         }
 
+        @ParameterizedTest
+        @MethodSource("edu.sakovichKseniya.junit.service.UserServiceTest#getArgumentsForLoginTest")
+        void loginParametrizedTest(String username, String password, Optional<User> user) {
+            userService.addAll(IVAN, PETR);
+            Optional<User> maybeUser = userService.login(username, password);
+
+            org.assertj.core.api.Assertions.assertThat(maybeUser).isEqualTo(user);
+
+        }
+    }
+
+    static Stream<Arguments> getArgumentsForLoginTest() {
+        return Stream.of(
+                Arguments.of("Ivan", "123", Optional.of(IVAN)),
+                Arguments.of("Petr", "111", Optional.of(PETR)),
+                Arguments.of("Petr", "ddd", Optional.empty()),
+                Arguments.of("ddd", "111", Optional.empty())
+        );
     }
 
     @AfterEach
