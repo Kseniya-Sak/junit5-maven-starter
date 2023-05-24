@@ -124,11 +124,8 @@ public class UserServiceTest {
             );
         }
 
-        @ParameterizedTest
-        @CsvSource({
-                "null, 123",
-                "Petr, null"
-        })
+        @ParameterizedTest(name = "{arguments} test")
+        @CsvFileSource(resources = "/login-test-data.csv", numLinesToSkip = 1)
         void loginParametrizedTest(String username, String password) {
             userService.addAll(IVAN, PETR);
             Optional<User> maybeUser = userService.login(username, password);
