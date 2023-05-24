@@ -1,6 +1,7 @@
 package edu.sakovichKseniya.junit.service;
 
 import edu.sakovichKseniya.junit.dto.User;
+import edu.sakovichKseniya.junit.paramResolver.UserServiceParamResolver;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.collection.IsCollectionWithSize;
 import org.hamcrest.collection.IsMapContaining;
@@ -8,6 +9,7 @@ import org.hamcrest.core.IsEqual;
 import org.hamcrest.core.IsNull;
 import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.extension.ExtendWith;
 
 import java.util.Map;
 import java.util.Optional;
@@ -16,26 +18,35 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @TestInstance(TestInstance.Lifecycle.PER_METHOD)
 @TestMethodOrder(MethodOrderer.DisplayName.class)
+@ExtendWith({
+        UserServiceParamResolver.class
+})
 public class UserServiceTest {
 
     private static final User IVAN = User.of(1, "Ivan", "123");
     private static final User PETR = User.of(2, "Petr", "111");
     private UserService userService;
 
+    UserServiceTest(TestInfo testInfo) {
+        System.out.println();
+    }
+
     @BeforeAll
     static void init() {
         System.out.println("Before all: ");
+
     }
 
     @BeforeEach
-    void prepare() {
+    void prepare(UserService userService) {
         System.out.println("Before each: " + this);
-        userService = new UserService();
+        this.userService = userService;
     }
 
     @Test
     void usersEmptyIfNoUsersAdded() {
         System.out.println("Test 1: " + this);
+        System.out.println("userService " + userService);
         var users = userService.getAll();
         assertTrue(users.isEmpty(), () -> "Error");
     }
@@ -43,6 +54,7 @@ public class UserServiceTest {
     @Test
     void usersSizeIfUserAdded() {
         System.out.println("Test 2: " + this);
+        System.out.println("userService " + userService);
         userService.add(IVAN);
         userService.add(PETR);
 
@@ -53,6 +65,7 @@ public class UserServiceTest {
 
     @Test
     void usersConvertedToMapById() {
+        System.out.println("userService " + userService);
         userService.addAll(IVAN, PETR);
 
         Map<Integer, User> users = userService.getAllConvertedById();
